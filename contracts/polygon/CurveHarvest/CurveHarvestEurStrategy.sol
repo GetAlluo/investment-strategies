@@ -23,33 +23,21 @@ contract CurveHarvestEurStrategy is AccessControl, IAlluoStrategy {
     IERC20 public constant harvestReward =
         IERC20(0xab0b2ddB9C7e440fAc8E140A89c0dbCBf2d7Bbff);
 
-    // If not testing, please uncomment line27 and delete line28
-    // IExchange public constant exchange = IExchange(0x6b45B9Ab699eFbb130464AcEFC23D49481a05773);
-    IExchange public exchange;
-
-    // no curve rewards for 4eur atm
-    // IERC20 public constant crvRewards =
-    //     IERC20();
+    IExchange public constant exchange = IExchange(0x6b45B9Ab699eFbb130464AcEFC23D49481a05773);
 
     uint8 public constant unwindDecimals = 2;
 
     constructor(
         address voteExecutor,
-        address gnosis,
-        bool isTesting
+        address gnosis
     ) {
-        if (isTesting) {
-            _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-            exchange = IExchange(0xAA5213E1575b1fAea849EaF3a0715B9bbdF3817A);
-        } else {
-            require(
-                voteExecutor.isContract(),
-                "CurveHarvestEurStrategy: 1!contract"
-            );
-            require(gnosis.isContract(), "CurveHarvestEurStrategy: 2!contract");
-            _grantRole(DEFAULT_ADMIN_ROLE, gnosis);
-            _grantRole(DEFAULT_ADMIN_ROLE, voteExecutor);
-        }
+        require(
+            voteExecutor.isContract(),
+            "CurveHarvestEurStrategy: 1!contract"
+        );
+        require(gnosis.isContract(), "CurveHarvestEurStrategy: 2!contract");
+        _grantRole(DEFAULT_ADMIN_ROLE, gnosis);
+        _grantRole(DEFAULT_ADMIN_ROLE, voteExecutor);
     }
 
     function invest(bytes calldata data, uint256 amount)

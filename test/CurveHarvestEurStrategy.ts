@@ -163,7 +163,7 @@ describe("CurveHarvestEurStrategy", function () {
         admin = await getImpersonatedSigner("0x2580f9954529853Ca5aC5543cE39E9B5B1145135");
 
         const Strategy = await ethers.getContractFactory("CurveHarvestEurStrategy")
-        strategy = await Strategy.deploy(ZERO_ADDR, ZERO_ADDR, true);
+        strategy = await Strategy.deploy(ZERO_ADDR, ZERO_ADDR);
     });
 
     async function testSwap(fromAddress: string, toAddress: string, amount: BigNumberish) {
@@ -192,7 +192,6 @@ describe("CurveHarvestEurStrategy", function () {
     it("Should check EURT-USDT is working", async () => {
         const oneToken = parseUnits("1.0", await eurt.decimals());
         await testSwap(eurt.address, usdc.address, oneToken);
-
     })
 
     it("Should check initial contract state", async () => {
@@ -222,7 +221,7 @@ describe("CurveHarvestEurStrategy", function () {
         expect(contract1).to.not.be.equal(contract2);
 
         const Strategy = await ethers.getContractFactory("CurveHarvestEurStrategy");
-        const newStrategy = await Strategy.deploy(contract1, contract2, false);
+        const newStrategy = await Strategy.deploy(contract1, contract2);
 
         expect(await newStrategy.hasRole(adminRole, contract1)).to.be.true;
         expect(await newStrategy.hasRole(adminRole, contract2)).to.be.true;
@@ -234,10 +233,10 @@ describe("CurveHarvestEurStrategy", function () {
 
         const Strategy = await ethers.getContractFactory("CurveHarvestEurStrategy");
 
-        let newStrategy = Strategy.deploy(notContract, contract, false);
+        let newStrategy = Strategy.deploy(notContract, contract);
         await expect(newStrategy).to.be.revertedWith("CurveHarvestEurStrategy: 1!contract");
 
-        newStrategy = Strategy.deploy(contract, notContract, false);
+        newStrategy = Strategy.deploy(contract, notContract);
         await expect(newStrategy).to.be.revertedWith("CurveHarvestEurStrategy: 2!contract");
     })
 
@@ -246,7 +245,7 @@ describe("CurveHarvestEurStrategy", function () {
         const roleError = `AccessControl: account ${signers[0].address.toLowerCase()} is missing role ${ethers.constants.HashZero}`;
 
         const Strategy = await ethers.getContractFactory("CurveHarvestEurStrategy");
-        const newStrategy = await Strategy.deploy(contract, contract, false);
+        const newStrategy = await Strategy.deploy(contract, contract);
 
         await expect(newStrategy.invest("0x", 0)).to.be.revertedWith(roleError);
         await expect(newStrategy.exitAll("0x", 0, contract, contract, true)).to.be.revertedWith(roleError);
